@@ -62,3 +62,8 @@ zanni_message_decode(buf, sizeof(buf), &rx);
 /* Get library version */
 const char* ver = zanni_protocol_version();
 ```
+
+## License
+
+MIT © 2026 Ggorets0dev
+
