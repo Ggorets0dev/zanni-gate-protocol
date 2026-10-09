@@ -9,6 +9,18 @@ Each message has a fixed size of 16 bytes and consists of:
 - `device_type` (4 bytes) — Device type (unsigned integer, encoded in Big-Endian).
 - `status` (4 bytes) — Device status (unsigned integer, encoded in Big-Endian).
 
+## Versioning
+
+The library version is defined in `CMakeLists.txt` via `project(zanni-protocol VERSION x.y.z)`.
+CMake automatically generates `zanni_version.h` providing:
+- `ZANNI_PROTOCOL_VERSION_MAJOR`
+- `ZANNI_PROTOCOL_VERSION_MINOR`
+- `ZANNI_PROTOCOL_VERSION_PATCH`
+- `ZANNI_PROTOCOL_VERSION_STRING`
+- Runtime API: `const char* zanni_protocol_version(void);`
+
+To append the version to the output static library file name (e.g. `zanni-protocol-0.1.0.lib`), pass `-DZANNI_VERSION_IN_OUTPUT_NAME=ON` to CMake.
+
 ## Build
 
 ### Using Makefile
@@ -36,6 +48,19 @@ cmake --build build --config Release
 ## API Usage
 
 Include the header file `zanni_protocol.h` in your project.
+
+### Check Version
+
+```c
+#include "zanni_protocol.h"
+#include <stdio.h>
+
+int main(void) 
+{
+    printf("zanni-protocol version: %s\n", zanni_protocol_version());
+    return 0;
+}
+```
 
 ### Encoding
 

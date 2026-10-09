@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "zanni_version.h"
 
 #ifdef __cplusplus
 extern "C" 
@@ -19,6 +20,17 @@ typedef struct
     uint32_t device_type;     /* 4 bytes device type */
     uint32_t status;          /* 4 bytes status */
 } zanni_message_t;
+
+typedef zanni_message_t zanni_message_t;
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(sizeof(zanni_message_t) == ZANNI_MSG_SIZE, "zanni_message_t size is wrong (ZANNI_MSG_SIZE)");
+#endif
+
+/**
+ * Returns the version string of the protocol library (e.g. "0.1.0").
+ */
+const char* zanni_protocol_version(void);
 
 /**
  * Encodes a zanni_message_t into a 16-byte binary buffer.

@@ -1,6 +1,11 @@
 #include <string.h>
 #include "zanni_protocol.h"
 
+const char* zanni_protocol_version(void) 
+{
+    return ZANNI_PROTOCOL_VERSION_STRING;
+}
+
 int zanni_message_encode(const zanni_message_t* msg, uint8_t* buffer, size_t buffer_size) 
 {
     if (!msg || !buffer || buffer_size < ZANNI_MSG_SIZE) 
