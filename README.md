@@ -1,6 +1,6 @@
 # zanni-protocol
 
-Static C library for encoding and decoding messages according to the Zanni protocol.
+Static C library for encoding and decoding messages according to the Zanni protocol. Used over TCP/IP in all ZanniGate projects.
 
 ## Message Format
 
@@ -47,59 +47,18 @@ cmake --build build --config Release
 
 ## API Usage
 
-Include the header file `zanni_protocol.h` in your project.
-
-### Check Version
-
 ```c
 #include "zanni_protocol.h"
-#include <stdio.h>
 
-int main(void) 
-{
-    printf("zanni-protocol version: %s\n", zanni_protocol_version());
-    return 0;
-}
-```
+/* Encode */
+uint8_t buf[ZANNI_MSG_SIZE];
+zanni_message_t tx = { .tag = "DEVICE01", .device_type = 42, .status = 1 };
+zanni_message_encode(&tx, buf, sizeof(buf));
 
-### Encoding
+/* Decode */
+zanni_message_t rx;
+zanni_message_decode(buf, sizeof(buf), &rx);
 
-```c
-#include "zanni_protocol.h"
-#include <stdio.h>
-#include <string.h>
-
-int main(void) 
-{
-    zanni_message_t msg;
-    memset(&msg, 0, sizeof(zanni_message_t));
-    strncpy(msg.tag, "MYDEVICE", ZANNI_TAG_SIZE);
-    msg.device_type = 123;
-    msg.status = 1;
-
-    uint8_t buffer[ZANNI_MSG_SIZE];
-    if (zanni_message_encode(&msg, buffer, sizeof(buffer)) == 0) 
-    {
-        printf("Successfully encoded!\n");
-    }
-
-    return 0;
-}
-```
-
-### Decoding
-
-```c
-#include "zanni_protocol.h"
-#include <stdio.h>
-
-void process_data(const uint8_t* buffer, size_t size) 
-{
-    zanni_message_t msg;
-
-    if (zanni_message_decode(buffer, size, &msg) == 0) 
-    {
-        /* Successfully decoded, inspect msg fields */
-    }
-}
+/* Get library version */
+const char* ver = zanni_protocol_version();
 ```
