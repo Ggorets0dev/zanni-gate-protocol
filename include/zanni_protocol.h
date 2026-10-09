@@ -14,16 +14,25 @@ extern "C"
 #define ZANNI_MSG_SIZE 16
 #define ZANNI_TAG_SIZE 8
 
+typedef enum zanni_virt_dev_e 
+{
+    ZANNI_VIRT_DEV_TOGGLE = 0
+} zanni_virt_dev_e;
+
 typedef struct 
 {
-    char tag[ZANNI_TAG_SIZE]; /* 8 bytes text tag. Not necessarily null-terminated if it takes all 8 bytes */
-    uint32_t device_type;     /* 4 bytes device type */
-    uint32_t status;          /* 4 bytes status */
+    char tag[ZANNI_TAG_SIZE];     /* 8 bytes text tag. Not necessarily null-terminated if it takes all 8 bytes */
+    zanni_virt_dev_e device_type; /* 4 bytes device type */
+    uint32_t status;              /* 4 bytes status */
 } zanni_message_t;
 
 typedef zanni_message_t zanni_message_t;
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#if defined(__cplusplus)
+static_assert(sizeof(zanni_virt_dev_e) == sizeof(uint32_t), "zanni_virt_dev_e size is wrong");
+static_assert(sizeof(zanni_message_t) == ZANNI_MSG_SIZE, "zanni_message_t size is wrong (ZANNI_MSG_SIZE)");
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(sizeof(zanni_virt_dev_e) == sizeof(uint32_t), "zanni_virt_dev_e size is wrong");
 _Static_assert(sizeof(zanni_message_t) == ZANNI_MSG_SIZE, "zanni_message_t size is wrong (ZANNI_MSG_SIZE)");
 #endif
 
