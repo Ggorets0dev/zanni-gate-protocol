@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(zanni-protocol VERSION 0.1.0 LANGUAGES C)
+project(zanni-protocol VERSION 0.2.0 LANGUAGES C)
 
 option(ZANNI_VERSION_IN_OUTPUT_NAME "Append version to output library filename" OFF)
 

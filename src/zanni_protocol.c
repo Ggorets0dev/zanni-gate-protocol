@@ -14,23 +14,26 @@ int zanni_message_encode(const zanni_message_t* msg, uint8_t* buffer, size_t buf
     }
 
     /* 1. Copy text tag (8 bytes) */
-    memcpy(buffer, msg->tag, ZANNI_TAG_SIZE);
+    memcpy(buffer, msg->tag, ZANNI_TAG_SIZE - 1);
+    buffer[ZANNI_TAG_SIZE - 1] = '\0';
+
+    const int offset = ZANNI_TAG_SIZE;
 
     /* 2. Encode device_type (4 bytes). 
      * Using Big Endian (Network Byte Order) for cross-platform compatibility. 
      */
-    buffer[8]  = (uint8_t)((msg->device_type >> 24) & 0xFF);
-    buffer[9]  = (uint8_t)((msg->device_type >> 16) & 0xFF);
-    buffer[10] = (uint8_t)((msg->device_type >> 8) & 0xFF);
-    buffer[11] = (uint8_t)(msg->device_type & 0xFF);
+    buffer[offset]  = (uint8_t)((msg->device_type >> 24) & 0xFF);
+    buffer[offset + 1]  = (uint8_t)((msg->device_type >> 16) & 0xFF);
+    buffer[offset + 2] = (uint8_t)((msg->device_type >> 8) & 0xFF);
+    buffer[offset + 3] = (uint8_t)(msg->device_type & 0xFF);
 
     /* 3. Encode status (4 bytes). 
      * Using Big Endian (Network Byte Order). 
      */
-    buffer[12] = (uint8_t)((msg->status >> 24) & 0xFF);
-    buffer[13] = (uint8_t)((msg->status >> 16) & 0xFF);
-    buffer[14] = (uint8_t)((msg->status >> 8) & 0xFF);
-    buffer[15] = (uint8_t)(msg->status & 0xFF);
+    buffer[offset + 4] = (uint8_t)((msg->status >> 24) & 0xFF);
+    buffer[offset + 5] = (uint8_t)((msg->status >> 16) & 0xFF);
+    buffer[offset + 6] = (uint8_t)((msg->status >> 8) & 0xFF);
+    buffer[offset + 7] = (uint8_t)(msg->status & 0xFF);
 
     return 0;
 }
@@ -45,17 +48,19 @@ int zanni_message_decode(const uint8_t* buffer, size_t buffer_size, zanni_messag
     /* 1. Decode text tag (8 bytes) */
     memcpy(msg->tag, buffer, ZANNI_TAG_SIZE);
 
+    const int offset = ZANNI_TAG_SIZE;
+
     /* 2. Decode device_type (4 bytes, Big Endian) */
-    msg->device_type = ((uint32_t)buffer[8] << 24) |
-                       ((uint32_t)buffer[9] << 16) |
-                       ((uint32_t)buffer[10] << 8) |
-                       ((uint32_t)buffer[11]);
+    msg->device_type = ((uint32_t)buffer[offset] << 24) |
+                       ((uint32_t)buffer[offset + 1] << 16) |
+                       ((uint32_t)buffer[offset + 2] << 8) |
+                       ((uint32_t)buffer[offset + 3]);
 
     /* 3. Decode status (4 bytes, Big Endian) */
-    msg->status = ((uint32_t)buffer[12] << 24) |
-                  ((uint32_t)buffer[13] << 16) |
-                  ((uint32_t)buffer[14] << 8) |
-                  ((uint32_t)buffer[15]);
+    msg->status = ((uint32_t)buffer[offset + 4] << 24) |
+                  ((uint32_t)buffer[offset + 5] << 16) |
+                  ((uint32_t)buffer[offset + 6] << 8) |
+                  ((uint32_t)buffer[offset + 7]);
 
     return 0;
 }
