@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(zanni-protocol VERSION 0.2.0 LANGUAGES C)
+project(zanni-protocol VERSION 1.0.0 LANGUAGES C)
 
 option(ZANNI_VERSION_IN_OUTPUT_NAME "Append version to output library filename" OFF)
 
@@ -28,3 +28,15 @@ if(ZANNI_VERSION_IN_OUTPUT_NAME)
         OUTPUT_NAME "zanni-protocol-${PROJECT_VERSION}"
     )
 endif()
+
+option(BUILD_TESTING "Build test suite" ON)
+
+if(BUILD_TESTING)
+    enable_testing()
+    add_executable(test_zanni_protocol
+        tests/test_zanni_protocol.c
+    )
+    target_link_libraries(test_zanni_protocol PRIVATE zanni-protocol)
+    add_test(NAME test_zanni_protocol COMMAND test_zanni_protocol)
+endif()
+

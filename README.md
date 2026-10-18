@@ -4,10 +4,11 @@ Static C library for encoding and decoding messages according to the Zanni proto
 
 ## Message Format
 
-Each message has a fixed size of 16 bytes and consists of:
-- `tag` (8 bytes) — Text identifier (tag). If the string takes all 8 bytes, it is not null-terminated.
-- `device_type` (4 bytes) — Device type (unsigned integer, encoded in Big-Endian).
-- `status` (4 bytes) — Device status (unsigned integer, encoded in Big-Endian).
+Each message has a fixed size of 20 bytes and consists of:
+- `tag` (8 bytes) — Text identifier (tag).
+- `major_proto_ver` (4 bytes) — Major protocol version (unsigned integer, Big-Endian).
+- `device_type` (4 bytes) — Device type (unsigned integer, Big-Endian).
+- `payload` (4 bytes) — Device status / execution status (Big-Endian).
 
 ## Versioning
 
@@ -19,9 +20,9 @@ CMake automatically generates `zanni_version.h` providing:
 - `ZANNI_PROTOCOL_VERSION_STRING`
 - Runtime API: `const char* zanni_protocol_version(void);`
 
-To append the version to the output static library file name (e.g. `zanni-protocol-0.1.0.lib`), pass `-DZANNI_VERSION_IN_OUTPUT_NAME=ON` to CMake.
+To append the version to the output static library file name (e.g. `zanni-protocol-0.2.0.lib`), pass `-DZANNI_VERSION_IN_OUTPUT_NAME=ON` to CMake.
 
-## Build
+## Build and Test
 
 ### Using Makefile
 
@@ -31,9 +32,13 @@ A Makefile wrapper around CMake is provided:
 # Build the project
 make
 
+# Run tests
+make test
+
 # Or run specific targets
 make config
 make build
+make test
 make clean
 make rebuild
 ```
@@ -43,6 +48,7 @@ make rebuild
 ```bash
 cmake -B build
 cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
 ```
 
 ## API Usage
@@ -52,12 +58,20 @@ cmake --build build --config Release
 
 /* Encode */
 uint8_t buf[ZANNI_MSG_SIZE];
-zanni_message_t tx = { .tag = "DEVICE01", .device_type = 42, .status = 1 };
+zanni_message_t tx = {
+    .major_proto_ver = ZANNI_PROTOCOL_VERSION_MAJOR,
+    .tag = "DEVICE01",
+    .device_type = ZANNI_VIRT_DEV_TOGGLE,
+    .payload = { .dev_status = 1 }
+};
 zanni_message_encode(&tx, buf, sizeof(buf));
 
 /* Decode */
 zanni_message_t rx;
-zanni_message_decode(buf, sizeof(buf), &rx);
+zanni_decode_status_e status = zanni_message_decode(buf, sizeof(buf), &rx);
+if (status == ZANNI_DCD_STATUS_OK) {
+    /* Message successfully decoded */
+}
 
 /* Get library version */
 const char* ver = zanni_protocol_version();
